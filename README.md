@@ -3,7 +3,7 @@ Call control services (MS side) in Layer3 (CM) partial protocol stack implementa
 MNCC stands for Mobile Network Call Control
 The repository contains an implementation of elementary procedures for Circuit Switched (CS) Call Control (CC) in 3GPP. <br>
 <h3> Inspiration </h3>
-This repository has been inspired by <i> <a href="http://laforge.gnumonks.org/"> Harald Welte et al.</a> and  <a href="http://osmocom.org/"> osmocom projects. </a></i><br>
+This repository has been inspired by <i> <a href="http://laforge.gnumonks.org/"> Harald Welte</a> et al. and <a href="http://osmocom.org/"> osmocom projects. </a></i><br>
 It is a reverse engineering project by: <br><br>
 <ul>
   <li>
