@@ -4,7 +4,7 @@ MNCC stands for Mobile Network Call Control
 The repository contains an implementation of elementary procedures for Circuit Switched (CS) Call Control (CC) in 3GPP. <br>
 <h4><b><i> Inspiration </i></b></h4>
 This repository has been inspired by <i> Harald Welte et al. and osmocom projects.</i><br>
-It is a reverse engineering project by: <br>
+It is a reverse engineering project by: <br><br>
 <ul>
   <li>
   	<a href="http://www.etsi.org/deliver/etsi_ts/124000_124099/124007/14.00.00_60/ts_124007v140000p.pdf"> 3GPP specification of MNCC-SAP </a>
