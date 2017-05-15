@@ -64,32 +64,7 @@ static int connect_mncc()
 	return 0;
 }
 
-/**
-* Read from MNNC socket 
-*/
-static int read_mncc_sock()
-{
-	char buf[sizeof(struct gsm_mncc)+1024];
-	struct gsm_mncc *mncc_prim = (struct gsm_mncc *) buf;
-	memset(buf, 0, sizeof(buf));
-	int record_count = recv(mncc_sock_fd, buf, sizeof(buf), 0);
-	mncc_setup_ind(mncc_prim->msg_type, buf);
 
-	if (mncc_prim->msg_type == GSM_TCHF_FRAME
-	 || mncc_prim->msg_type == GSM_BAD_FRAME) {
-
-		/** Write voice to socket */
-		if(send_voice)
-		{
-			send_voice = 0;
-			send_voice_sample(mncc_prim->callref);
-			printf("Done sending voice sample\n");			
-		}
-		
-		return 0;
-	}
-	return record_count;
-}
 
 /**
 * Write from MNNC socket 
@@ -147,6 +122,36 @@ static int send_and_free_mncc(unsigned int msg_type, void *data)
 	ret = send_mncc(msg_type, data);
 	free(data);
 	return 0;
+}
+
+/**
+* Read from MNNC socket 
+*/
+static int read_mncc_sock()
+{
+	char buf[sizeof(struct gsm_mncc)+1024];
+	struct gsm_mncc *mncc_prim = (struct gsm_mncc *) buf;
+	memset(buf, 0, sizeof(buf));
+	int record_count = recv(mncc_sock_fd, buf, sizeof(buf), 0);
+	mncc_setup_ind(mncc_prim->msg_type, buf);
+
+	if (mncc_prim->msg_type == GSM_TCHF_FRAME
+	 || mncc_prim->msg_type == GSM_BAD_FRAME) {
+
+		/** Write voice to socket */
+		if(send_voice)
+		{
+			printf("MNCC: Change audio mode\n");
+			struct gsm_mncc *audio_mode = create_mncc(MNCC_FRAME_RECV, mncc_prim->callref);
+			send_and_free_mncc(audio_mode->msg_type, audio_mode);
+			send_voice = 0;
+			send_voice_sample(mncc_prim->callref);
+			printf("Done sending voice sample\n");			
+		}
+		
+		return 0;
+	}
+	return record_count;
 }
 
 /**
@@ -309,7 +314,6 @@ int mncc_setup_ind(int msg_type, void *arg)
 static int mncc_call(char *number)
 {
 	struct gsm_mncc *mncc;
-	int i = 0;
 	int call_ref = new_callref++;
 	printf("MNCC: Call setup request\n");
 	mncc = create_mncc(MNCC_SETUP_REQ, call_ref);
@@ -337,12 +341,10 @@ static int mncc_call(char *number)
 		mncc->bearer_cap.coding = 0;
 		mncc->bearer_cap.speech_ctm = 0;
 
-		mncc->bearer_cap.radio = 3; /** Support TCH/H also*/
+		mncc->bearer_cap.radio = 1; /** Support TCH/F only*/
 		/** Supported rates **/
-		mncc->bearer_cap.speech_ver[i++] = 2; /* support full rate v2 */
-		mncc->bearer_cap.speech_ver[i++] = 0; /* support full rate v1 */
-		mncc->bearer_cap.speech_ver[i++] = 1; /* support half rate v2 */
-		mncc->bearer_cap.speech_ver[i] = -1; /* end of list */
+		mncc->bearer_cap.speech_ver[0] = 0;
+		mncc->bearer_cap.speech_ver[1] = -1; /* end of list */
 		/** END **/
 		
 		mncc->bearer_cap.transfer = 0;
@@ -358,8 +360,7 @@ static int mncc_call(char *number)
 	}
 
 	send_and_free_mncc(mncc->msg_type, mncc);
-
-	printf("MNCC: change audio mode\n");
+	printf("MNCC: Change audio mode\n");
 	struct gsm_mncc *audio_mode = create_mncc(MNCC_FRAME_RECV, call_ref);
 	return send_and_free_mncc(audio_mode->msg_type, audio_mode);
 }

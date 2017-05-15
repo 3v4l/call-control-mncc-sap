@@ -248,10 +248,10 @@ call_indicators = {
 if __name__== "__main__":
 	mncc_sock = MnccSocket()
 	time.sleep(2)
+	#calling_proc = True indicates MO and calling_proc = False indicates MT calling procedures
 	calling_proc = True
 	if calling_proc:
 		number = "4804650123"
 		mncc_call(number, new_callref)
-	else:
-		mncc_rx_thread()
+	mncc_rx_thread()
 
