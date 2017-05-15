@@ -2,7 +2,7 @@
 Call control services (MS side) in Layer3 (CM) partial protocol stack implementation for MNCC-SAP access points
 MNCC stands for Mobile Network Call Control
 The repository contains an implementation of elementary procedures for Circuit Switched (CS) Call Control (CC) in 3GPP. <br>
-<h3><b><i> Inspiration </i></b></h3>
+<h3> Inspiration </h3>
 This repository has been inspired by <i> Harald Welte et al. and osmocom projects.</i><br>
 It is a reverse engineering project by: <br><br>
 <ul>
