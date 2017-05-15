@@ -76,8 +76,8 @@ def mncc_number(number, num_type = 0, num_plan = 1, num_present = 1, num_screen 
 
 def mncc_bearer_cap():
 	EightIntegers = ctypes.c_int * 8
-	ii = EightIntegers(2, 0, 1, -1, 0, 0, 0, 0)
-	return mncc.gsm_mncc_bearer_cap(coding = 0, speech_ctm=0, radio = 3, speech_ver = ii, transfer = 0, mode = 0)
+	ii = EightIntegers(0, -1, 0, 0, 0, 0, 0, 0)
+	return mncc.gsm_mncc_bearer_cap(coding = 0, speech_ctm=0, radio = 1, speech_ver = ii, transfer = 0, mode = 0)
 
 def mncc_cccap():
 	return mncc.gsm_mncc_cccap(dtmf = 1)
@@ -95,8 +95,9 @@ def mncc_call(number, callref):
                        clir = mncc_clir())
 	send_mncc(msg)
 
-	audio_tx_msg = mncc_msg(msg_type = mncc.MNCC_FRAME_RECV, callref = callref)
-	send_mncc(audio_tx_msg)
+	print "MNCC: Change call audio mode\n"
+	audio_mode = mncc_msg(msg_type = mncc.MNCC_FRAME_RECV, callref = msg.callref)
+	send_mncc(audio_mode)
 
 def send_voice(callref):
 	#change connected to False
@@ -119,8 +120,9 @@ def mncc_call_setup_ind(msg):
 	send_mncc(call_conf_req)
 
 	#Change audio mode for voice transmission
-	##audio_mode = mncc_msg(msg_type = mncc.MNCC_FRAME_RECV, callref = msg.callref)
-	#send_mncc(call_alert_req)
+	print "MNCC: Change call audio mode\n"
+	audio_mode = mncc_msg(msg_type = mncc.MNCC_FRAME_RECV, callref = msg.callref)
+	send_mncc(audio_mode)
 	
 	#MT call request alerting MNCC_ALERT_REQ to BTS which internally forwards to MO as MNCC_ALERT_IND
 	print "MNCC: Call alerting.\nCall will be auto picked after 4seconds.\n"
